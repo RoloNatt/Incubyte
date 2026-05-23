@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.db
+env/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# IDE
+.vscode/
+.idea/
+
+# Test artifacts
+test.db
+.pytest_cache/

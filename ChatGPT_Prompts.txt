@@ -1162,3 +1162,921 @@ This stack is small, fast to build, easy to demo, and fits the prototype require
 give all the features and architecture diagram of how the app will work
 
 ------------------------------
+
+
+## Features (final prototype scope)
+
+Keep it focused around the 2 requirements only: **Employee Management** and **Salary Insights**.
+
+---
+
+# 1. Employee Management
+
+## Add Employee
+
+HR can create a new employee from UI.
+
+Fields:
+
+* Full Name
+* Job Title
+* Country
+* Department
+* Salary
+
+Validation:
+
+* All required
+* Salary must be positive
+
+---
+
+## View Employees
+
+Employee list in a table.
+
+Columns:
+
+* Name
+* Job Title
+* Country
+* Department
+* Salary
+* Actions
+
+Capabilities:
+
+* Paginated table
+* Search by employee name
+* Filter by country
+
+---
+
+## Update Employee
+
+HR clicks Edit on a row.
+
+Can update:
+
+* Full Name
+* Job Title
+* Country
+* Department
+* Salary
+
+---
+
+## Delete Employee
+
+HR clicks Delete.
+
+Employee removed from database.
+
+Simple hard delete (prototype-friendly).
+
+---
+
+# 2. Salary Insights
+
+Separate page for analytics.
+
+---
+
+## Country Salary Stats
+
+HR selects a country.
+
+System shows:
+
+* Minimum salary
+* Maximum salary
+* Average salary
+* Employee count
+
+---
+
+## Job Title Salary Stats
+
+HR selects:
+
+* Country
+* Job Title
+
+System shows:
+
+* Average salary for that job title in that country
+
+---
+
+# 3. Seed Data
+
+Engineers run seed script.
+
+System generates:
+
+* 10,000 employees
+* Full names using:
+
+  * first_names.txt
+  * last_names.txt
+
+Random:
+
+* Job title
+* Country
+* Department
+* Salary
+
+Fast bulk insert into SQLite.
+
+---
+
+# 4. UI Features
+
+---
+
+## Employees Page
+
+Contains:
+
+### Top section
+
+* Search bar
+* Country dropdown
+* Add Employee button
+
+### Main section
+
+* Employee table
+* Pagination
+
+### Row actions
+
+* Edit
+* Delete
+
+---
+
+## Salary Insights Page
+
+Contains:
+
+### Section 1
+
+Country dropdown
+
+Displays salary stats cards.
+
+---
+
+### Section 2
+
+Country dropdown
+Job title dropdown
+
+Displays average salary card.
+
+---
+
+# 5. Backend Features
+
+---
+
+## Employee APIs
+
+### Create employee
+
+Insert into DB
+
+---
+
+### Get employees
+
+Supports:
+
+* pagination
+* search
+* country filter
+
+---
+
+### Update employee
+
+Update record
+
+---
+
+### Delete employee
+
+Delete record
+
+---
+
+## Salary Insights APIs
+
+### Country salary stats
+
+Runs SQL aggregate queries:
+
+* MIN
+* MAX
+* AVG
+* COUNT
+
+---
+
+### Job title salary stats
+
+Runs filtered AVG query.
+
+---
+
+# 6. Non-functional Features
+
+Even for prototype, basic quality:
+
+* Form validation
+* Error messages
+* Loading states
+* Empty state handling
+* Fast seed script
+* Indexed DB queries
+
+---
+
+# Architecture Diagram
+
+## High-level system architecture
+
+```text id="0h1yz0"
+┌──────────────────────────────────────┐
+│              HR Manager              │
+│         (uses browser UI)            │
+└──────────────────────────────────────┘
+                  │
+                  ▼
+┌──────────────────────────────────────┐
+│         React Frontend (UI)          │
+│--------------------------------------│
+│ Employees Page                       │
+│ - Employee Table                     │
+│ - Search                             │
+│ - Country Filter                     │
+│ - Pagination                         │
+│ - Add/Edit/Delete Form               │
+│                                      │
+│ Salary Insights Page                 │
+│ - Country Stats                      │
+│ - Job Title Avg Stats                │
+└──────────────────────────────────────┘
+                  │
+         HTTP API Requests
+                  │
+                  ▼
+┌──────────────────────────────────────┐
+│         FastAPI Backend              │
+│--------------------------------------│
+│ Employee CRUD APIs                   │
+│ Insights APIs                        │
+│ Validation                           │
+│ Query Handling                       │
+└──────────────────────────────────────┘
+                  │
+          SQLAlchemy ORM
+                  │
+                  ▼
+┌──────────────────────────────────────┐
+│          SQLite Database             │
+│--------------------------------------│
+│ employees table                      │
+│                                      │
+│ id                                   │
+│ full_name                            │
+│ job_title                            │
+│ country                              │
+│ department                           │
+│ salary                               │
+└──────────────────────────────────────┘
+```
+
+---
+
+# Data Flow Diagram
+
+## Employee CRUD flow
+
+```text id="mr4u8x"
+HR Manager
+   │
+   ▼
+React UI
+(Employee Form / Table)
+   │
+   ▼
+API Request
+(POST / GET / PUT / DELETE)
+   │
+   ▼
+FastAPI
+   │
+   ▼
+SQLAlchemy
+   │
+   ▼
+SQLite DB
+   │
+   ▼
+Response
+   │
+   ▼
+React UI updates table
+```
+
+---
+
+## Salary Insights flow
+
+```text id="0a7dzd"
+HR selects Country / Job Title
+   │
+   ▼
+React UI
+   │
+   ▼
+GET /insights API
+   │
+   ▼
+FastAPI
+   │
+   ▼
+SQL Aggregate Query
+(MIN / MAX / AVG / COUNT)
+   │
+   ▼
+SQLite DB
+   │
+   ▼
+JSON Response
+   │
+   ▼
+Stats Cards shown in UI
+```
+
+---
+
+# Seed Script Flow
+
+```text id="my9ojm"
+Seed Script
+   │
+   ▼
+Read first_names.txt
+Read last_names.txt
+   │
+   ▼
+Generate 10,000 Employees
+   │
+   ▼
+Bulk Insert
+(executemany)
+   │
+   ▼
+SQLite DB
+```
+
+---
+
+# Frontend Component Architecture
+
+```text id="7qjlwm"
+App
+│
+├── Navbar
+│    ├── Employees
+│    └── Salary Insights
+│
+├── EmployeesPage
+│    ├── SearchBar
+│    ├── CountryFilter
+│    ├── EmployeeTable
+│    ├── Pagination
+│    └── EmployeeFormModal
+│
+└── InsightsPage
+     ├── CountryStatsCard
+     ├── JobTitleFilter
+     └── AvgSalaryCard
+```
+
+---
+
+# Backend Module Architecture
+
+```text id="qjkjp0"
+main.py
+│
+├── database.py
+│    └── DB connection
+│
+├── models.py
+│    └── Employee model
+│
+├── schemas.py
+│    └── Request/response validation
+│
+├── crud.py
+│    └── DB queries
+│
+└── seed.py
+     └── Generate 10k employees
+```
+
+---
+
+This architecture stays **very small, understandable, and easy to implement**, while still being fully end-to-end functional.
+
+
+
+
+=========================================
+5.
+write prompt for ai IDE to develop this app. the code must be clean, follow the 3 TDD rules: (1) write a failing test first, (2) write minimum code to pass, (3) refactor with tests green. give proper folder structure as well.
+
+-----------------
+
+Use this prompt directly in your AI IDE:
+
+Build a Salary Management Tool prototype for an organization with 10,000 employees.
+
+This is a localhost prototype, so prioritize:
+
+simplicity
+clean architecture
+maintainable code
+easy-to-use UI
+end-to-end functionality
+good developer practices
+
+Do NOT overengineer. Keep the app small and focused.
+
+Mandatory Development Process
+
+You MUST follow strict TDD (Test-Driven Development) for the entire project.
+
+For every feature:
+
+Rule 1
+
+Write a failing test first
+
+Rule 2
+
+Write the minimum implementation code required to make the test pass
+
+Rule 3
+
+Refactor while ensuring all tests remain green
+
+Repeat this cycle for every backend and frontend feature.
+
+Do NOT skip tests.
+
+Tech Stack (MANDATORY)
+Backend
+Python
+FastAPI
+SQLAlchemy
+SQLite
+pytest
+Frontend
+ReactJS (NOT NextJS)
+Material UI
+React Testing Library
+Jest
+API communication
+native fetch (not axios)
+App Requirements
+1. Employee Management
+
+HR manager should be able to:
+
+Add Employee
+
+Create employee from UI
+
+Fields:
+
+Full Name
+Job Title
+Country
+Department
+Salary
+
+Validation:
+
+all required
+salary must be positive
+View Employees
+
+Display employees in paginated table
+
+Columns:
+
+Full Name
+Job Title
+Country
+Department
+Salary
+Actions
+
+Features:
+
+search by employee name
+filter by country
+pagination
+Update Employee
+
+Edit employee from UI
+
+Delete Employee
+
+Delete employee from UI
+
+Use hard delete (prototype simplicity)
+
+2. Salary Insights
+
+Separate page
+
+Country Salary Stats
+
+HR selects country
+
+Display:
+
+Minimum salary
+Maximum salary
+Average salary
+Employee count
+Job Title Salary Stats
+
+HR selects:
+
+Country
+Job Title
+
+Display:
+
+Average salary for that job title in that country
+3. Seed Script
+
+Create a seed script that inserts 10,000 employees
+
+Requirements:
+
+Generate full names by combining:
+
+first_names.txt
+last_names.txt
+
+Randomize:
+
+job title
+country
+department
+salary
+
+Performance matters.
+
+Requirements:
+
+bulk insert
+transaction wrapping
+fast execution
+
+Print timing stats after seeding
+
+Example:
+
+Seeded 10000 employees in X seconds
+
+Database Schema
+
+Single table:
+
+employees
+
+Fields:
+
+id (auto increment primary key)
+full_name
+job_title
+country
+department
+salary
+
+Indexes:
+
+full_name
+country
+job_title
+API Requirements
+Employee APIs
+POST /employees
+
+Create employee
+
+GET /employees
+
+Supports query params:
+
+page
+limit
+search
+country
+
+Returns paginated result
+
+PUT /employees/{id}
+
+Update employee
+
+DELETE /employees/{id}
+
+Delete employee
+
+Salary Insight APIs
+GET /insights/country/{country}
+
+Returns:
+
+{
+  "min_salary": 0,
+  "max_salary": 0,
+  "avg_salary": 0,
+  "employee_count": 0
+}
+GET /insights/job-title
+
+Query params:
+
+country
+job_title
+
+Returns:
+
+{
+  "avg_salary": 0
+}
+Frontend Requirements
+Navigation
+
+Simple navbar:
+
+Employees
+Salary Insights
+Employees Page
+
+Contains:
+
+Top section
+Search input
+Country filter dropdown
+Add Employee button
+Table section
+
+Paginated employee table
+
+Columns:
+
+Name
+Job Title
+Country
+Department
+Salary
+Actions
+
+Actions:
+
+Edit
+Delete
+Form Modal
+
+Used for Add/Edit
+
+Fields:
+
+Full Name
+Job Title
+Country
+Department
+Salary
+
+Buttons:
+
+Save
+Cancel
+
+Show validation errors
+
+Salary Insights Page
+Country Stats Section
+
+Country dropdown
+
+Show cards:
+
+Min Salary
+Max Salary
+Avg Salary
+Employee Count
+Job Title Stats Section
+
+Dropdowns:
+
+Country
+Job Title
+
+Show card:
+
+Average Salary
+UI Design Requirements
+
+Must be:
+
+clean
+simple
+minimal
+professional
+responsive enough for desktop
+
+Use Material UI components.
+
+Do NOT add:
+
+charts
+animations
+dark mode
+authentication
+fancy dashboards
+extra pages
+Folder Structure (MANDATORY)
+
+Use this exact clean structure:
+
+salary-management-tool/
+│
+├── backend/
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── database.py
+│   │   ├── models.py
+│   │   ├── schemas.py
+│   │   ├── crud.py
+│   │   ├── seed.py
+│   │   ├── routers/
+│   │   │   ├── employees.py
+│   │   │   └── insights.py
+│   │   └── tests/
+│   │       ├── test_employees.py
+│   │       ├── test_insights.py
+│   │       └── conftest.py
+│   │
+│   ├── first_names.txt
+│   ├── last_names.txt
+│   ├── requirements.txt
+│   └── pytest.ini
+│
+├── frontend/
+│   ├── src/
+│   │   ├── api/
+│   │   │   └── employeeApi.js
+│   │   │
+│   │   ├── components/
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── EmployeeTable.jsx
+│   │   │   ├── EmployeeFormModal.jsx
+│   │   │   ├── SearchBar.jsx
+│   │   │   ├── CountryFilter.jsx
+│   │   │   ├── StatsCard.jsx
+│   │   │
+│   │   ├── pages/
+│   │   │   ├── EmployeesPage.jsx
+│   │   │   └── InsightsPage.jsx
+│   │   │
+│   │   ├── tests/
+│   │   │   ├── EmployeeTable.test.jsx
+│   │   │   ├── EmployeeFormModal.test.jsx
+│   │   │   ├── EmployeesPage.test.jsx
+│   │   │   └── InsightsPage.test.jsx
+│   │   │
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── setupTests.js
+│   │
+│   ├── package.json
+│   └── vite.config.js
+│
+├── README.md
+└── .gitignore
+Testing Requirements (MANDATORY)
+Backend Tests (pytest)
+
+Write tests FIRST for:
+
+Employees
+create employee
+validation failure
+get paginated employees
+search employees
+filter by country
+update employee
+delete employee
+Insights
+country salary stats
+job title avg salary
+empty result handling
+Frontend Tests
+
+Write tests FIRST for:
+
+Employee form
+validation errors shown
+successful submit
+Employee table
+renders rows
+pagination works
+delete action works
+Employees page
+search works
+country filter works
+Insights page
+stats display correctly
+Code Quality Requirements
+
+Must follow:
+
+SOLID where practical
+clean naming
+separation of concerns
+reusable components
+no duplicated logic
+type-safe validation using Pydantic
+clear error handling
+Implementation Requirements
+
+At the end:
+
+Provide:
+
+Full working code
+Test files
+Seed script
+README with setup instructions
+Execution Commands
+
+App should run locally with:
+
+Backend:
+
+uvicorn app.main:app --reload
+
+Frontend:
+
+npm install
+npm run dev
+
+Seed:
+
+python app/seed.py
+
+Tests:
+
+Backend:
+
+pytest
+
+Frontend:
+
+npm test
+Important Final Instructions
+
+Do NOT generate code in one giant dump.
+
+Build feature-by-feature using TDD:
+
+write failing test
+implement minimum code
+make tests pass
+refactor
+continue
+
+Ensure final code is:
+
+fully functional
+clean
+tested
+runnable end-to-end
+prototype-appropriate
+not overengineered
+
