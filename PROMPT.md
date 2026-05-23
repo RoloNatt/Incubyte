@@ -214,6 +214,9 @@ This file tracks all prompts given and the modifications made in response.
 
 ### Deployment Status
 - **Backend:** Running at http://localhost:8001
-- **Frontend:** Running at http://localhost:5174
+- **Frontend:** Running at http://localhost:5173
 - **Database:** 10,000 employees seeded
 - **Status:** ✓ All systems operational
+
+### Hotfix (2026-05-23)
+- Fixed `WorkOutline` icon import error in `InsightsPage.jsx` — replaced with `Work` icon (WorkOutline doesn't exist in MUI icons)
