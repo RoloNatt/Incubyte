@@ -60,6 +60,7 @@ def test_filter_employees_by_country(client, sample_employee):
     emp2 = sample_employee.copy()
     emp2["full_name"] = "Jane Doe"
     emp2["country"] = "USA"
+    emp2["currency"] = "USD"
     client.post("/employees", json=emp2)
 
     response = client.get("/employees?country=India")
@@ -98,3 +99,9 @@ def test_delete_employee(client, sample_employee):
 def test_delete_nonexistent_employee(client):
     response = client.delete("/employees/9999")
     assert response.status_code == 404
+
+
+def test_employee_response_includes_currency(client, sample_employee):
+    response = client.post("/employees", json=sample_employee)
+    data = response.json()
+    assert data["currency"] == "INR"

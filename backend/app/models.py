@@ -11,6 +11,7 @@ class Employee(Base):
     country = Column(String, nullable=False)
     department = Column(String, nullable=False)
     salary = Column(Float, nullable=False)
+    currency = Column(String, nullable=False, default="INR")
 
     __table_args__ = (
         Index("ix_employees_full_name", "full_name"),

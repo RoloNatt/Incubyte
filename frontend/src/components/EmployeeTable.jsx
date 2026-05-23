@@ -11,8 +11,10 @@ import {
   Tooltip,
   Typography,
   Box,
+  TableSortLabel,
 } from '@mui/material';
 import { Edit, Delete, SearchOff } from '@mui/icons-material';
+import { formatSalary } from '../utils/currency';
 
 export default function EmployeeTable({
   employees,
@@ -22,17 +24,43 @@ export default function EmployeeTable({
   onPageChange,
   onEdit,
   onDelete,
+  displayCurrency = 'Original',
+  sortBy = '',
+  sortOrder = 'asc',
+  onSort,
 }) {
+  const sortableColumns = [
+    { id: 'full_name', label: 'Full Name' },
+    { id: 'job_title', label: 'Job Title' },
+    { id: 'country', label: 'Country' },
+    { id: 'department', label: 'Department' },
+  ];
+
   return (
     <TableContainer component={Paper} sx={{ borderRadius: 3 }}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Full Name</TableCell>
-            <TableCell>Job Title</TableCell>
-            <TableCell>Country</TableCell>
-            <TableCell>Department</TableCell>
-            <TableCell align="right">Salary</TableCell>
+            {sortableColumns.map((col) => (
+              <TableCell key={col.id}>
+                <TableSortLabel
+                  active={sortBy === col.id}
+                  direction={sortBy === col.id ? sortOrder : 'asc'}
+                  onClick={() => onSort && onSort(col.id)}
+                >
+                  {col.label}
+                </TableSortLabel>
+              </TableCell>
+            ))}
+            <TableCell align="right">
+              <TableSortLabel
+                active={sortBy === 'salary'}
+                direction={sortBy === 'salary' ? sortOrder : 'asc'}
+                onClick={() => onSort && onSort('salary')}
+              >
+                Salary
+              </TableSortLabel>
+            </TableCell>
             <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -65,8 +93,8 @@ export default function EmployeeTable({
                 <TableCell>{emp.job_title}</TableCell>
                 <TableCell>{emp.country}</TableCell>
                 <TableCell>{emp.department}</TableCell>
-                <TableCell align="right" sx={{ fontVariantNumeric: 'tabular-nums' }}>
-                  {emp.salary.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                <TableCell align="right" sx={{ fontVariantNumeric: 'tabular-nums', fontWeight: 500 }}>
+                  {formatSalary(emp.salary, emp.currency, displayCurrency)}
                 </TableCell>
                 <TableCell align="center">
                   <Tooltip title="Edit">

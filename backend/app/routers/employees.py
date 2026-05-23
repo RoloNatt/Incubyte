@@ -23,9 +23,11 @@ def get_employees(
     limit: int = 10,
     search: str | None = None,
     country: str | None = None,
+    sort_by: str | None = None,
+    sort_order: str = "asc",
     db: Session = Depends(get_db),
 ):
-    employees, total = crud.get_employees(db, page, limit, search, country)
+    employees, total = crud.get_employees(db, page, limit, search, country, sort_by, sort_order)
     return {
         "employees": employees,
         "total": total,

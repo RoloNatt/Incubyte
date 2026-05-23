@@ -4,8 +4,8 @@ import EmployeeTable from '../components/EmployeeTable';
 
 describe('EmployeeTable', () => {
   const mockEmployees = [
-    { id: 1, full_name: 'John Smith', job_title: 'Engineer', country: 'India', department: 'Engineering', salary: 75000 },
-    { id: 2, full_name: 'Jane Doe', job_title: 'Manager', country: 'USA', department: 'HR', salary: 90000 },
+    { id: 1, full_name: 'John Smith', job_title: 'Engineer', country: 'India', department: 'Engineering', salary: 75000, currency: 'INR' },
+    { id: 2, full_name: 'Jane Doe', job_title: 'Manager', country: 'USA', department: 'HR', salary: 90000, currency: 'USD' },
   ];
 
   const defaultProps = {
@@ -56,9 +56,15 @@ describe('EmployeeTable', () => {
     expect(screen.getByText('Try changing filters or adding employees')).toBeInTheDocument();
   });
 
-  it('formats salary with commas', () => {
-    render(<EmployeeTable {...defaultProps} />);
-    expect(screen.getByText('75,000')).toBeInTheDocument();
-    expect(screen.getByText('90,000')).toBeInTheDocument();
+  it('formats salary with currency symbols', () => {
+    render(<EmployeeTable {...defaultProps} displayCurrency="Original" />);
+    expect(screen.getByText('₹75,000')).toBeInTheDocument();
+    expect(screen.getByText('$90,000')).toBeInTheDocument();
+  });
+
+  it('converts salary when display currency set', () => {
+    render(<EmployeeTable {...defaultProps} displayCurrency="USD" />);
+    expect(screen.getByText('$904')).toBeInTheDocument();
+    expect(screen.getByText('$90,000')).toBeInTheDocument();
   });
 });

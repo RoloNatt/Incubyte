@@ -119,3 +119,49 @@ This file tracks all prompts given and the modifications made in response.
 ### Test Results
 - **Backend:** 19 tests passed
 - **Frontend:** 21 tests passed
+
+## Prompt 6
+
+**Date:** 2026-05-23
+
+**Prompt:** Transform the app into a professional HR analytics dashboard with currency-aware salary display, better filters, interactive charts, analytics, smoother UX, and richer visual feedback. Implement Option A for currency handling (store local currency, static exchange rates, display currency selector). Replace job title text input with searchable dropdown. Remove "Get Stats" buttons — auto-fetch on selection change. Add Recharts-based analytics dashboard with salary distribution, job title comparison, department comparison, and employee distribution charts. Add contextual insights (% vs global average). Add sorting to employee table. Add Clear Filters. Continue strict TDD.
+
+**Summary of Modifications:**
+
+### Backend Changes
+- **`app/config.py`** — Added `COUNTRY_CURRENCY_MAP`, `EXCHANGE_RATES_TO_INR`, `CURRENCY_SYMBOLS`, `convert_salary()` utility.
+- **`app/models.py`** — Added `currency` column to Employee model.
+- **`app/schemas.py`** — Added `currency` field to EmployeeCreate, EmployeeUpdate, EmployeeResponse.
+- **`app/seed.py`** — Auto-assigns currency based on country using `COUNTRY_CURRENCY_MAP`.
+- **`app/crud.py`** — Added `sort_by`/`sort_order` to `get_employees()`. Added analytics functions: `get_salary_distribution()`, `get_job_title_comparison()`, `get_department_comparison()`, `get_employee_distribution()`, `get_global_avg_salary()`.
+- **`app/routers/employees.py`** — Added `sort_by`, `sort_order` query params.
+- **`app/routers/insights.py`** — Added endpoints: `/insights/salary-distribution`, `/insights/job-title-comparison`, `/insights/department-comparison`, `/insights/employee-distribution`, `/insights/global-average`.
+- **`app/routers/metadata.py`** (new) — `GET /metadata/job-titles?country=`, `GET /metadata/countries`.
+- **`app/main.py`** — Registered metadata router.
+
+### Backend Tests (new)
+- **`app/tests/test_config.py`** — 9 tests (DB path + currency conversion).
+- **`app/tests/test_analytics.py`** (new) — 6 tests (salary distribution, job title comparison, department comparison, employee distribution, global average).
+- **`app/tests/test_metadata.py`** (new) — 4 tests (job titles, job titles filtered by country, countries, empty state).
+
+### Frontend Changes
+- **`src/utils/currency.js`** (new) — `convertSalary()`, `formatSalary()`, `formatIndian()`, exchange rates, symbols.
+- **`src/components/CurrencySelector.jsx`** (new) — Reusable Display Currency dropdown.
+- **`src/api/employeeApi.js`** — Added: `getJobTitles()`, `getCountries()`, `getSalaryDistribution()`, `getJobTitleComparison()`, `getDepartmentComparison()`, `getEmployeeDistribution()`, `getGlobalAverage()`. Updated `getEmployees()` with `sort_by`/`sort_order`.
+- **`src/components/EmployeeTable.jsx`** — Sortable column headers (TableSortLabel), currency-aware salary formatting using `formatSalary()`.
+- **`src/components/EmployeeFormModal.jsx`** — Country is now a Select dropdown (auto-sets currency). Includes FormHelperText for validation.
+- **`src/pages/EmployeesPage.jsx`** — Added CurrencySelector, Clear Filters button, sorting state management.
+- **`src/pages/InsightsPage.jsx`** — Complete rewrite: auto-fetch on country/job title change, Recharts bar/pie charts, job title Autocomplete dropdown (dependent on country), contextual % insights, loading states.
+- Installed `recharts` package.
+
+### Frontend Tests
+- **`src/tests/currency.test.js`** (new) — 8 tests (conversion, Indian format, western format, cross-currency).
+- **`src/tests/EmployeeTable.test.jsx`** — Updated: currency symbols test, currency conversion display test (7 total).
+- **`src/tests/EmployeeFormModal.test.jsx`** — Updated: MUI Select interaction, currency in payload (5 total).
+- **`src/tests/EmployeesPage.test.jsx`** — Updated: currency in mock data (5 total).
+- **`src/tests/InsightsPage.test.jsx`** — Rewritten: empty state, country filter, display currency (5 total).
+
+### Test Results
+- **Backend:** 36 tests passed
+- **Frontend:** 30 tests passed
+- **Total:** 66 tests, all green

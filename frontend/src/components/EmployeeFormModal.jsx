@@ -7,7 +7,15 @@ import {
   TextField,
   Button,
   Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
 } from '@mui/material';
+
+const COUNTRY_CURRENCY = { India: 'INR', USA: 'USD', Germany: 'EUR', UK: 'GBP', Singapore: 'SGD', Australia: 'AUD' };
+const COUNTRIES = ['India', 'USA', 'Germany', 'UK', 'Singapore', 'Australia'];
 
 const initialForm = {
   full_name: '',
@@ -15,6 +23,7 @@ const initialForm = {
   country: '',
   department: '',
   salary: '',
+  currency: '',
 };
 
 export default function EmployeeFormModal({ open, onClose, onSave, employee }) {
@@ -48,7 +57,8 @@ export default function EmployeeFormModal({ open, onClose, onSave, employee }) {
       setErrors(newErrors);
       return;
     }
-    onSave({ ...form, salary: parseFloat(form.salary) });
+    const currency = form.currency || COUNTRY_CURRENCY[form.country] || 'INR';
+    onSave({ ...form, salary: parseFloat(form.salary), currency });
   }
 
   function handleChange(field, value) {
@@ -75,13 +85,22 @@ export default function EmployeeFormModal({ open, onClose, onSave, employee }) {
             error={!!errors.job_title}
             helperText={errors.job_title}
           />
-          <TextField
-            label="Country"
-            value={form.country}
-            onChange={(e) => handleChange('country', e.target.value)}
-            error={!!errors.country}
-            helperText={errors.country}
-          />
+          <FormControl error={!!errors.country}>
+            <InputLabel>Country</InputLabel>
+            <Select
+              value={form.country}
+              label="Country"
+              onChange={(e) => {
+                handleChange('country', e.target.value);
+                handleChange('currency', COUNTRY_CURRENCY[e.target.value] || '');
+              }}
+            >
+              {COUNTRIES.map((c) => (
+                <MenuItem key={c} value={c}>{c}</MenuItem>
+              ))}
+            </Select>
+            {errors.country && <FormHelperText>{errors.country}</FormHelperText>}
+          </FormControl>
           <TextField
             label="Department"
             value={form.department}

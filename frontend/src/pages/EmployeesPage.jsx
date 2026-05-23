@@ -9,11 +9,12 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
-import { Add } from '@mui/icons-material';
+import { Add, ClearAll } from '@mui/icons-material';
 import EmployeeTable from '../components/EmployeeTable';
 import EmployeeFormModal from '../components/EmployeeFormModal';
 import SearchBar from '../components/SearchBar';
 import CountryFilter from '../components/CountryFilter';
+import CurrencySelector from '../components/CurrencySelector';
 import {
   getEmployees,
   createEmployee,
@@ -27,6 +28,9 @@ export default function EmployeesPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [country, setCountry] = useState('');
+  const [displayCurrency, setDisplayCurrency] = useState('Original');
+  const [sortBy, setSortBy] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -36,7 +40,7 @@ export default function EmployeesPage() {
     setLoading(true);
     setError('');
     try {
-      const data = await getEmployees({ page, search, country });
+      const data = await getEmployees({ page, search, country, sort_by: sortBy, sort_order: sortOrder });
       setEmployees(data.employees);
       setTotal(data.total);
     } catch {
@@ -46,7 +50,7 @@ export default function EmployeesPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, country]);
+  }, [page, search, country, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchEmployees();
@@ -87,6 +91,25 @@ export default function EmployeesPage() {
     setPage(1);
   }
 
+  function handleSort(column) {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(column);
+      setSortOrder('asc');
+    }
+    setPage(1);
+  }
+
+  function handleClearFilters() {
+    setSearch('');
+    setCountry('');
+    setDisplayCurrency('Original');
+    setSortBy('');
+    setSortOrder('asc');
+    setPage(1);
+  }
+
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <Box sx={{ mb: 3 }}>
@@ -100,6 +123,16 @@ export default function EmployeesPage() {
         <CardContent sx={{ display: 'flex', gap: 2, alignItems: 'center', py: 2, '&:last-child': { pb: 2 } }}>
           <SearchBar value={search} onChange={handleSearchChange} />
           <CountryFilter value={country} onChange={handleCountryChange} />
+          <CurrencySelector value={displayCurrency} onChange={setDisplayCurrency} />
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<ClearAll />}
+            onClick={handleClearFilters}
+            sx={{ whiteSpace: 'nowrap' }}
+          >
+            Clear Filters
+          </Button>
           <Box sx={{ flexGrow: 1 }} />
           <Button variant="contained" startIcon={<Add />} onClick={handleAdd}>
             Add Employee
@@ -126,6 +159,10 @@ export default function EmployeesPage() {
           onPageChange={setPage}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          displayCurrency={displayCurrency}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSort={handleSort}
         />
       )}
 

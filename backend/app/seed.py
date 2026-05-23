@@ -4,7 +4,7 @@ import os
 from sqlalchemy import text
 from app.database import engine, Base
 from app.models import Employee
-from app.config import DB_PATH
+from app.config import DB_PATH, COUNTRY_CURRENCY_MAP
 
 COUNTRIES = ["India", "USA", "Germany", "UK", "Singapore", "Australia"]
 JOB_TITLES = [
@@ -53,6 +53,7 @@ def seed():
                 "country": country,
                 "department": random.choice(DEPARTMENTS),
                 "salary": round(random.uniform(salary_min, salary_max), 2),
+                "currency": COUNTRY_CURRENCY_MAP[country],
             }
         )
 

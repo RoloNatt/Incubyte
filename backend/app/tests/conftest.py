@@ -44,4 +44,5 @@ def sample_employee():
         "country": "India",
         "department": "Engineering",
         "salary": 75000.0,
+        "currency": "INR",
     }

@@ -23,6 +23,7 @@ describe('EmployeeFormModal', () => {
       country: 'India',
       department: 'Engineering',
       salary: 50000,
+      currency: 'INR',
     };
     render(<EmployeeFormModal {...defaultProps} employee={employee} />);
     expect(screen.getByText('Edit Employee')).toBeInTheDocument();
@@ -38,13 +39,19 @@ describe('EmployeeFormModal', () => {
     expect(screen.getByText('Salary must be a positive number')).toBeInTheDocument();
   });
 
-  it('calls onSave with form data on valid submit', () => {
+  it('calls onSave with form data on valid submit', async () => {
     const onSave = vi.fn();
     render(<EmployeeFormModal {...defaultProps} onSave={onSave} />);
 
     fireEvent.change(screen.getByLabelText('Full Name'), { target: { value: 'Jane Doe' } });
     fireEvent.change(screen.getByLabelText('Job Title'), { target: { value: 'Manager' } });
-    fireEvent.change(screen.getByLabelText('Country'), { target: { value: 'USA' } });
+
+    // Open country select dropdown and pick USA
+    const selectButton = screen.getAllByRole('combobox')[0];
+    fireEvent.mouseDown(selectButton);
+    const usaOption = await screen.findByText('USA');
+    fireEvent.click(usaOption);
+
     fireEvent.change(screen.getByLabelText('Department'), { target: { value: 'HR' } });
     fireEvent.change(screen.getByLabelText('Salary'), { target: { value: '80000' } });
 
@@ -55,6 +62,7 @@ describe('EmployeeFormModal', () => {
       country: 'USA',
       department: 'HR',
       salary: 80000,
+      currency: 'USD',
     });
   });
 

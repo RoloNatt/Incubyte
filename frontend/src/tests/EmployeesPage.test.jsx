@@ -8,7 +8,7 @@ vi.mock('../api/employeeApi');
 
 const mockResponse = {
   employees: [
-    { id: 1, full_name: 'John Smith', job_title: 'Engineer', country: 'India', department: 'Engineering', salary: 75000 },
+    { id: 1, full_name: 'John Smith', job_title: 'Engineer', country: 'India', department: 'Engineering', salary: 75000, currency: 'INR' },
   ],
   total: 1,
   page: 1,

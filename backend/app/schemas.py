@@ -7,6 +7,7 @@ class EmployeeCreate(BaseModel):
     country: str = Field(..., min_length=1)
     department: str = Field(..., min_length=1)
     salary: float = Field(..., gt=0)
+    currency: str = Field(..., min_length=1)
 
 
 class EmployeeUpdate(BaseModel):
@@ -15,6 +16,7 @@ class EmployeeUpdate(BaseModel):
     country: str = Field(..., min_length=1)
     department: str = Field(..., min_length=1)
     salary: float = Field(..., gt=0)
+    currency: str = Field(..., min_length=1)
 
 
 class EmployeeResponse(BaseModel):
@@ -26,6 +28,7 @@ class EmployeeResponse(BaseModel):
     country: str
     department: str
     salary: float
+    currency: str
 
 
 class PaginatedEmployeesResponse(BaseModel):

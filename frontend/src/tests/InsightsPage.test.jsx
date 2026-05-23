@@ -1,9 +1,23 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import InsightsPage from '../pages/InsightsPage';
+import * as api from '../api/employeeApi';
+
+vi.mock('../api/employeeApi');
 
 describe('InsightsPage', () => {
+  beforeEach(() => {
+    api.getGlobalAverage.mockResolvedValue({ avg_salary: 100000 });
+    api.getCountryInsights.mockResolvedValue({ min_salary: 50000, max_salary: 200000, avg_salary: 100000, employee_count: 500 });
+    api.getSalaryDistribution.mockResolvedValue([]);
+    api.getJobTitleComparison.mockResolvedValue([]);
+    api.getDepartmentComparison.mockResolvedValue([]);
+    api.getEmployeeDistribution.mockResolvedValue([]);
+    api.getJobTitles.mockResolvedValue([]);
+    api.getJobTitleInsights.mockResolvedValue({ avg_salary: 80000 });
+  });
+
   it('renders page title', () => {
     render(
       <MemoryRouter>
@@ -13,34 +27,6 @@ describe('InsightsPage', () => {
     expect(screen.getByText('Salary Insights')).toBeInTheDocument();
   });
 
-  it('renders country stats section', () => {
-    render(
-      <MemoryRouter>
-        <InsightsPage />
-      </MemoryRouter>
-    );
-    expect(screen.getByText('Country Salary Stats')).toBeInTheDocument();
-  });
-
-  it('renders job title stats section', () => {
-    render(
-      <MemoryRouter>
-        <InsightsPage />
-      </MemoryRouter>
-    );
-    expect(screen.getByText('Job Title Salary Stats')).toBeInTheDocument();
-  });
-
-  it('renders Get Stats buttons', () => {
-    render(
-      <MemoryRouter>
-        <InsightsPage />
-      </MemoryRouter>
-    );
-    const buttons = screen.getAllByText('Get Stats');
-    expect(buttons).toHaveLength(2);
-  });
-
   it('renders page subtitle', () => {
     render(
       <MemoryRouter>
@@ -48,5 +34,33 @@ describe('InsightsPage', () => {
       </MemoryRouter>
     );
     expect(screen.getByText('Analyze salary data across countries and job titles')).toBeInTheDocument();
+  });
+
+  it('renders empty state when no country selected', () => {
+    render(
+      <MemoryRouter>
+        <InsightsPage />
+      </MemoryRouter>
+    );
+    expect(screen.getByText('Select a country to view salary insights')).toBeInTheDocument();
+    expect(screen.getByText('Analytics will load automatically')).toBeInTheDocument();
+  });
+
+  it('renders country filter', () => {
+    render(
+      <MemoryRouter>
+        <InsightsPage />
+      </MemoryRouter>
+    );
+    expect(screen.getAllByText('Country').length).toBeGreaterThan(0);
+  });
+
+  it('renders display currency selector', () => {
+    render(
+      <MemoryRouter>
+        <InsightsPage />
+      </MemoryRouter>
+    );
+    expect(screen.getAllByText('Display Currency').length).toBeGreaterThan(0);
   });
 });

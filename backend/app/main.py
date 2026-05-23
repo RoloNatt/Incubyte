@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
-from app.routers import employees, insights
+from app.routers import employees, insights, metadata
 
 Base.metadata.create_all(bind=engine)
 
@@ -17,3 +17,4 @@ app.add_middleware(
 
 app.include_router(employees.router)
 app.include_router(insights.router)
+app.include_router(metadata.router)

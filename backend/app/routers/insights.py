@@ -28,3 +28,43 @@ def get_job_title_insights(
             detail="No employees found for this country and job title",
         )
     return result
+
+
+@router.get("/insights/salary-distribution")
+def get_salary_distribution(country: str = Query(...), db: Session = Depends(get_db)):
+    result = crud.get_salary_distribution(db, country)
+    if not result:
+        raise HTTPException(status_code=404, detail="No data found")
+    return result
+
+
+@router.get("/insights/job-title-comparison")
+def get_job_title_comparison(country: str = Query(...), db: Session = Depends(get_db)):
+    result = crud.get_job_title_comparison(db, country)
+    if not result:
+        raise HTTPException(status_code=404, detail="No data found")
+    return result
+
+
+@router.get("/insights/department-comparison")
+def get_department_comparison(country: str = Query(...), db: Session = Depends(get_db)):
+    result = crud.get_department_comparison(db, country)
+    if not result:
+        raise HTTPException(status_code=404, detail="No data found")
+    return result
+
+
+@router.get("/insights/employee-distribution")
+def get_employee_distribution(country: str = Query(...), db: Session = Depends(get_db)):
+    result = crud.get_employee_distribution(db, country)
+    if not result:
+        raise HTTPException(status_code=404, detail="No data found")
+    return result
+
+
+@router.get("/insights/global-average")
+def get_global_average(db: Session = Depends(get_db)):
+    result = crud.get_global_avg_salary(db)
+    if result is None:
+        raise HTTPException(status_code=404, detail="No data found")
+    return {"avg_salary": result}
