@@ -19,7 +19,7 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from '@mui/material';
-import { ExpandMore, TrendingUp, TrendingDown, People, Payments, AccountBalance, WorkOutline } from '@mui/icons-material';
+import { ExpandMore, TrendingUp, TrendingDown, People, Payments, AccountBalance, Work } from '@mui/icons-material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, ResponsiveContainer, Cell } from 'recharts';
 import StatsCard from '../components/StatsCard';
 import CurrencySelector from '../components/CurrencySelector';
@@ -243,7 +243,7 @@ export default function InsightsPage() {
             <Card sx={{ mb: 3, border: '1px solid', borderColor: 'divider' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                  <WorkOutline sx={{ fontSize: 20, color: 'text.secondary' }} />
+                  <Work sx={{ fontSize: 20, color: 'text.secondary' }} />
                   <Typography variant="h6">
                     {jobTitle} in {country}
                   </Typography>

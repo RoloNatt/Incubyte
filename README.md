@@ -1,12 +1,12 @@
 # Salary Management Tool
 
-A simple salary management prototype for an organization of 10,000 employees. Built for HR managers to manage employees and view salary insights.
+A professional HR compensation and budgeting dashboard for an organization of 10,000 employees. Built for HR managers to manage employees and analyze salary data with comprehensive payroll insights.
 
 ## Tech Stack
 
-- **Backend:** Python, FastAPI, SQLAlchemy, SQLite
-- **Frontend:** React, Material UI, Vite
-- **Testing:** pytest (backend), Vitest + React Testing Library (frontend)
+- **Backend:** Python 3.14, FastAPI, SQLAlchemy, SQLite, pytest
+- **Frontend:** React 19, Vite, Material UI 9, Recharts, Vitest + React Testing Library
+- **Testing:** 43 backend tests, 42 frontend tests (85 total)
 
 ## Setup
 
@@ -30,10 +30,10 @@ pip install -r requirements.txt
 python -m app.seed
 
 # Run backend server
-uvicorn app.main:app --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8001
 ```
 
-Backend runs at: http://localhost:8000
+Backend runs at: http://localhost:8001
 
 ### Frontend
 
@@ -101,8 +101,31 @@ npm test
 
 ## Features
 
-- **Employee CRUD:** Add, view, edit, delete employees
-- **Search & Filter:** Search by name, filter by country
+### Employee Management
+- **CRUD Operations:** Add, view, edit, delete employees with validation
+- **Search & Filter:** Search by name, filter by country, sortable columns
+- **Currency Support:** Multi-currency with automatic conversion (INR, USD, EUR, GBP, SGD, AUD)
+- **Salary Period Toggle:** View salaries in annual or monthly format
+- **Country Flags:** Visual country indicators in table
+- **Salary Tooltips:** Hover to see both annual and monthly values
 - **Pagination:** Server-side pagination (10 per page)
-- **Salary Insights:** Min/max/avg salary by country, avg salary by job title + country
+
+### Analytics Dashboard
+- **Compensation Metrics:** Min, Median, Average, Max salary with visual hierarchy
+- **Payroll Analytics:** Monthly/annual payroll totals, payroll share %, budget insights
+- **Summary Insights:** Auto-generated contextual insights (top dept, largest dept, top role)
+- **Interactive Charts:** 
+  - Salary Distribution (progressive colors)
+  - Payroll by Department (horizontal bars)
+  - Job Title Comparison
+  - Employee Distribution by Department
+  - Department Average Salary
+- **Job Title Analysis:** Median, headcount, payroll cost, comparison vs country average
+- **Dynamic Subtitles:** Charts show contextual insights automatically
+- **Collapsible Analytics:** Detailed analytics in expandable accordion
+
+### Technical
 - **Seed Script:** Bulk inserts 10,000 employees in ~0.03s
+- **Strict TDD:** All features developed test-first (85 tests passing)
+- **Responsive Design:** Works on desktop and mobile
+- **Number Formatting:** Indian (lakhs/crores) and Western (K/M) formats
