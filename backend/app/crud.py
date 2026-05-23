@@ -63,6 +63,14 @@ def delete_employee(db: Session, employee_id: int) -> bool:
     return True
 
 
+def _calculate_median(salaries: list[float]) -> float:
+    sorted_s = sorted(salaries)
+    n = len(sorted_s)
+    if n % 2 == 1:
+        return sorted_s[n // 2]
+    return round((sorted_s[n // 2 - 1] + sorted_s[n // 2]) / 2, 2)
+
+
 def get_country_insights(db: Session, country: str) -> dict | None:
     result = (
         db.query(
@@ -70,29 +78,106 @@ def get_country_insights(db: Session, country: str) -> dict | None:
             func.max(Employee.salary).label("max_salary"),
             func.avg(Employee.salary).label("avg_salary"),
             func.count(Employee.id).label("employee_count"),
+            func.sum(Employee.salary).label("total_payroll"),
         )
         .filter(Employee.country == country)
         .first()
     )
     if result.employee_count == 0:
         return None
+
+    # Median
+    salaries = [r[0] for r in db.query(Employee.salary).filter(Employee.country == country).all()]
+    median_salary = _calculate_median(salaries)
+
+    # Payroll share
+    global_payroll = db.query(func.sum(Employee.salary)).scalar() or 0
+    payroll_share = round((result.total_payroll / global_payroll) * 100, 2) if global_payroll else 0
+
+    # Top paying department (highest avg salary)
+    top_dept = (
+        db.query(Employee.department)
+        .filter(Employee.country == country)
+        .group_by(Employee.department)
+        .order_by(func.avg(Employee.salary).desc())
+        .first()
+    )
+
+    # Top paying job title (highest avg salary)
+    top_jt = (
+        db.query(Employee.job_title)
+        .filter(Employee.country == country)
+        .group_by(Employee.job_title)
+        .order_by(func.avg(Employee.salary).desc())
+        .first()
+    )
+
+    # Largest department (most employees)
+    largest_dept = (
+        db.query(Employee.department)
+        .filter(Employee.country == country)
+        .group_by(Employee.department)
+        .order_by(func.count(Employee.id).desc())
+        .first()
+    )
+
+    annual_payroll = result.total_payroll
+    monthly_payroll = round(annual_payroll / 12, 2)
+
     return {
         "min_salary": result.min_salary,
         "max_salary": result.max_salary,
         "avg_salary": round(result.avg_salary, 2),
+        "median_salary": median_salary,
         "employee_count": result.employee_count,
+        "annual_payroll": annual_payroll,
+        "monthly_payroll": monthly_payroll,
+        "payroll_share": payroll_share,
+        "top_department": top_dept[0] if top_dept else None,
+        "top_job_title": top_jt[0] if top_jt else None,
+        "largest_department": largest_dept[0] if largest_dept else None,
     }
 
 
 def get_job_title_insights(db: Session, country: str, job_title: str) -> dict | None:
     result = (
-        db.query(func.avg(Employee.salary).label("avg_salary"))
+        db.query(
+            func.avg(Employee.salary).label("avg_salary"),
+            func.count(Employee.id).label("count"),
+            func.sum(Employee.salary).label("total_payroll"),
+        )
         .filter(Employee.country == country, Employee.job_title == job_title)
         .first()
     )
     if result.avg_salary is None:
         return None
-    return {"avg_salary": round(result.avg_salary, 2)}
+
+    salaries = [
+        r[0] for r in db.query(Employee.salary)
+        .filter(Employee.country == country, Employee.job_title == job_title)
+        .all()
+    ]
+    median_salary = _calculate_median(salaries)
+
+    # Country avg for comparison
+    country_avg = (
+        db.query(func.avg(Employee.salary))
+        .filter(Employee.country == country)
+        .scalar()
+    )
+    vs_country_avg = round(((result.avg_salary - country_avg) / country_avg) * 100, 2) if country_avg else 0
+
+    annual_payroll = result.total_payroll
+    monthly_payroll = round(annual_payroll / 12, 2)
+
+    return {
+        "avg_salary": round(result.avg_salary, 2),
+        "median_salary": median_salary,
+        "count": result.count,
+        "annual_payroll": annual_payroll,
+        "monthly_payroll": monthly_payroll,
+        "vs_country_avg": vs_country_avg,
+    }
 
 
 def get_salary_distribution(db: Session, country: str) -> list[dict]:
@@ -176,6 +261,24 @@ def get_employee_distribution(db: Session, country: str) -> list[dict]:
         .all()
     )
     return [{"department": r.department, "count": r.count} for r in results]
+
+
+def get_department_payroll(db: Session, country: str) -> list[dict]:
+    results = (
+        db.query(
+            Employee.department,
+            func.sum(Employee.salary).label("total_payroll"),
+            func.count(Employee.id).label("count"),
+        )
+        .filter(Employee.country == country)
+        .group_by(Employee.department)
+        .order_by(func.sum(Employee.salary).desc())
+        .all()
+    )
+    return [
+        {"department": r.department, "total_payroll": round(r.total_payroll, 2), "count": r.count}
+        for r in results
+    ]
 
 
 def get_global_avg_salary(db: Session) -> float | None:

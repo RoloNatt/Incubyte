@@ -165,3 +165,49 @@ This file tracks all prompts given and the modifications made in response.
 - **Backend:** 36 tests passed
 - **Frontend:** 30 tests passed
 - **Total:** 66 tests, all green
+
+## Prompt 7
+
+**Date:** 2026-05-23
+
+**Prompt:** Transform the app into a decision-ready HR compensation dashboard. Add salary period toggle (Annual/Monthly), enhanced payroll analytics (median, payroll totals, share %, summary insights), improve charts (replace pie with horizontal bars, progressive colors, dynamic subtitles, fix axis), add collapsible detailed analytics, improve stats cards with icons/hierarchy/colors, add country flags to table, add salary tooltip with both periods, improve number formatting everywhere. Continue strict TDD.
+
+**Summary of Modifications:**
+
+### Backend Changes
+- **`app/crud.py`** — Added `_calculate_median()` helper. Enhanced `get_country_insights()` to return: `median_salary`, `annual_payroll`, `monthly_payroll`, `payroll_share`, `top_department`, `top_job_title`, `largest_department`. Enhanced `get_job_title_insights()` to return: `median_salary`, `count`, `annual_payroll`, `monthly_payroll`, `vs_country_avg`. Added `get_department_payroll()` function.
+- **`app/schemas.py`** — Extended `CountryInsightsResponse` (7 new fields) and `JobTitleInsightsResponse` (5 new fields).
+- **`app/routers/insights.py`** — Added `/insights/department-payroll` endpoint.
+
+### Backend Tests
+- **`app/tests/test_enhanced_insights.py`** (new) — 7 tests: median salary, payroll totals, payroll share %, summary insights (top_department, top_job_title, largest_department), enhanced job title insights (median, count, payroll, vs_country_avg), department payroll totals.
+
+### Frontend Changes
+- **`src/utils/currency.js`** — Added `applyPeriod()` for annual/monthly conversion, `formatCompact()` for lakhs/crores/K/M display.
+- **`src/components/SalaryPeriodToggle.jsx`** (new) — Reusable segmented toggle (Annual | Monthly).
+- **`src/components/StatsCard.jsx`** — Enhanced with `icon`, `color`, `secondary`, `variant` props for visual hierarchy.
+- **`src/components/EmployeeTable.jsx`** — Added country flags, salary tooltip (shows both annual & monthly), period label (/yr or /mo), stronger hover, `period` prop support.
+- **`src/pages/EmployeesPage.jsx`** — Added SalaryPeriodToggle, period state, passes period to table, clears on reset.
+- **`src/pages/InsightsPage.jsx`** — Complete rewrite:
+  - Summary insight strip with Chips (payroll share, top dept, largest dept, top role)
+  - Compensation cards with icons (Min, Median, Avg primary, Max)
+  - Budget cards (Employees, Monthly Payroll, Annual Payroll, VS Global Avg with ▲/▼ badge)
+  - Enhanced job title section (avg, median, headcount, monthly cost, annual cost, vs country avg chip)
+  - Key charts: Salary Distribution (progressive colors via Cell), Payroll by Department (horizontal bar, purple)
+  - Collapsible "Detailed Analytics" accordion: Job Title Comparison, Employee Distribution (horizontal bar replacing pie), Avg Salary by Department
+  - Dynamic chart subtitles (auto-generated from data)
+  - Fixed Y-axis formatting using `formatCompact`
+  - Period-aware: all values update when toggle changes
+- **`src/api/employeeApi.js`** — Added `getDepartmentPayroll()`.
+
+### Frontend Tests
+- **`src/tests/currency.test.js`** — Added 9 tests: applyPeriod (annual/monthly), formatSalary with period, formatCompact (INR lakhs/crores, USD K/M, small amounts). Total: 17 tests.
+- **`src/tests/EmployeeTable.test.jsx`** — Added: period label test, monthly salary test, country flags test. Total: 9 tests.
+- **`src/tests/InsightsPage.test.jsx`** — Added: salary period toggle renders. Updated mocks for enhanced API responses. Total: 6 tests.
+- **`src/tests/EmployeesPage.test.jsx`** — Unchanged, 5 tests.
+- **`src/tests/EmployeeFormModal.test.jsx`** — Unchanged, 5 tests.
+
+### Test Results
+- **Backend:** 43 tests passed
+- **Frontend:** 42 tests passed
+- **Total:** 85 tests, all green

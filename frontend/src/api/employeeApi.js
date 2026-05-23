@@ -89,6 +89,12 @@ export async function getEmployeeDistribution(country) {
   return response.json();
 }
 
+export async function getDepartmentPayroll(country) {
+  const response = await fetch(`${BASE_URL}/insights/department-payroll?country=${encodeURIComponent(country)}`);
+  if (!response.ok) throw new Error('Failed to fetch department payroll');
+  return response.json();
+}
+
 export async function getGlobalAverage() {
   const response = await fetch(`${BASE_URL}/insights/global-average`);
   if (!response.ok) throw new Error('Failed to fetch global average');

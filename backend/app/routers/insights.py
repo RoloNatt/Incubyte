@@ -62,6 +62,14 @@ def get_employee_distribution(country: str = Query(...), db: Session = Depends(g
     return result
 
 
+@router.get("/insights/department-payroll")
+def get_department_payroll(country: str = Query(...), db: Session = Depends(get_db)):
+    result = crud.get_department_payroll(db, country)
+    if not result:
+        raise HTTPException(status_code=404, detail="No data found")
+    return result
+
+
 @router.get("/insights/global-average")
 def get_global_average(db: Session = Depends(get_db)):
     result = crud.get_global_avg_salary(db)

@@ -16,6 +16,8 @@ import {
 import { Edit, Delete, SearchOff } from '@mui/icons-material';
 import { formatSalary } from '../utils/currency';
 
+const COUNTRY_FLAGS = { India: '🇮🇳', USA: '🇺🇸', Germany: '🇩🇪', UK: '🇬🇧', Singapore: '🇸🇬', Australia: '🇦🇺' };
+
 export default function EmployeeTable({
   employees,
   total,
@@ -25,6 +27,7 @@ export default function EmployeeTable({
   onEdit,
   onDelete,
   displayCurrency = 'Original',
+  period = 'annual',
   sortBy = '',
   sortOrder = 'asc',
   onSort,
@@ -35,6 +38,8 @@ export default function EmployeeTable({
     { id: 'country', label: 'Country' },
     { id: 'department', label: 'Department' },
   ];
+
+  const periodLabel = period === 'monthly' ? '/mo' : '/yr';
 
   return (
     <TableContainer component={Paper} sx={{ borderRadius: 3 }}>
@@ -85,16 +90,30 @@ export default function EmployeeTable({
                 key={emp.id}
                 sx={{
                   bgcolor: index % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.02)',
-                  '&:hover': { bgcolor: 'rgba(30, 58, 95, 0.04)' },
+                  '&:hover': { bgcolor: 'rgba(30, 58, 95, 0.08)' },
                   transition: 'background-color 0.15s',
                 }}
               >
                 <TableCell sx={{ fontWeight: 500 }}>{emp.full_name}</TableCell>
                 <TableCell>{emp.job_title}</TableCell>
-                <TableCell>{emp.country}</TableCell>
+                <TableCell>
+                  {COUNTRY_FLAGS[emp.country] || ''} {emp.country}
+                </TableCell>
                 <TableCell>{emp.department}</TableCell>
-                <TableCell align="right" sx={{ fontVariantNumeric: 'tabular-nums', fontWeight: 500 }}>
-                  {formatSalary(emp.salary, emp.currency, displayCurrency)}
+                <TableCell align="right">
+                  <Tooltip
+                    title={`Annual: ${formatSalary(emp.salary, emp.currency, displayCurrency, 'annual')} • Monthly: ${formatSalary(emp.salary, emp.currency, displayCurrency, 'monthly')}`}
+                    arrow
+                  >
+                    <Box>
+                      <Typography variant="body2" component="span" sx={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+                        {formatSalary(emp.salary, emp.currency, displayCurrency, period)}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
+                        {periodLabel}
+                      </Typography>
+                    </Box>
+                  </Tooltip>
                 </TableCell>
                 <TableCell align="center">
                   <Tooltip title="Edit">

@@ -42,8 +42,20 @@ class CountryInsightsResponse(BaseModel):
     min_salary: float
     max_salary: float
     avg_salary: float
+    median_salary: float
     employee_count: int
+    annual_payroll: float
+    monthly_payroll: float
+    payroll_share: float
+    top_department: str | None = None
+    top_job_title: str | None = None
+    largest_department: str | None = None
 
 
 class JobTitleInsightsResponse(BaseModel):
     avg_salary: float
+    median_salary: float
+    count: int
+    annual_payroll: float
+    monthly_payroll: float
+    vs_country_avg: float

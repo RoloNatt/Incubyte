@@ -56,15 +56,29 @@ describe('EmployeeTable', () => {
     expect(screen.getByText('Try changing filters or adding employees')).toBeInTheDocument();
   });
 
-  it('formats salary with currency symbols', () => {
-    render(<EmployeeTable {...defaultProps} displayCurrency="Original" />);
+  it('formats salary with currency symbols and period label', () => {
+    render(<EmployeeTable {...defaultProps} displayCurrency="Original" period="annual" />);
     expect(screen.getByText('₹75,000')).toBeInTheDocument();
     expect(screen.getByText('$90,000')).toBeInTheDocument();
+    expect(screen.getAllByText('/yr').length).toBe(2);
   });
 
   it('converts salary when display currency set', () => {
-    render(<EmployeeTable {...defaultProps} displayCurrency="USD" />);
+    render(<EmployeeTable {...defaultProps} displayCurrency="USD" period="annual" />);
     expect(screen.getByText('$904')).toBeInTheDocument();
     expect(screen.getByText('$90,000')).toBeInTheDocument();
+  });
+
+  it('shows monthly salary when period is monthly', () => {
+    render(<EmployeeTable {...defaultProps} displayCurrency="Original" period="monthly" />);
+    expect(screen.getByText('₹6,250')).toBeInTheDocument();
+    expect(screen.getByText('$7,500')).toBeInTheDocument();
+    expect(screen.getAllByText('/mo').length).toBe(2);
+  });
+
+  it('shows country flags', () => {
+    render(<EmployeeTable {...defaultProps} />);
+    expect(screen.getByText(/🇮🇳/)).toBeInTheDocument();
+    expect(screen.getByText(/🇺🇸/)).toBeInTheDocument();
   });
 });

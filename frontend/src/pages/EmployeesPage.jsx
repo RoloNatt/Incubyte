@@ -15,6 +15,7 @@ import EmployeeFormModal from '../components/EmployeeFormModal';
 import SearchBar from '../components/SearchBar';
 import CountryFilter from '../components/CountryFilter';
 import CurrencySelector from '../components/CurrencySelector';
+import SalaryPeriodToggle from '../components/SalaryPeriodToggle';
 import {
   getEmployees,
   createEmployee,
@@ -29,6 +30,7 @@ export default function EmployeesPage() {
   const [search, setSearch] = useState('');
   const [country, setCountry] = useState('');
   const [displayCurrency, setDisplayCurrency] = useState('Original');
+  const [period, setPeriod] = useState('annual');
   const [sortBy, setSortBy] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
   const [modalOpen, setModalOpen] = useState(false);
@@ -105,6 +107,7 @@ export default function EmployeesPage() {
     setSearch('');
     setCountry('');
     setDisplayCurrency('Original');
+    setPeriod('annual');
     setSortBy('');
     setSortOrder('asc');
     setPage(1);
@@ -124,6 +127,7 @@ export default function EmployeesPage() {
           <SearchBar value={search} onChange={handleSearchChange} />
           <CountryFilter value={country} onChange={handleCountryChange} />
           <CurrencySelector value={displayCurrency} onChange={setDisplayCurrency} />
+          <SalaryPeriodToggle value={period} onChange={setPeriod} />
           <Button
             variant="outlined"
             size="small"
@@ -160,6 +164,7 @@ export default function EmployeesPage() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           displayCurrency={displayCurrency}
+          period={period}
           sortBy={sortBy}
           sortOrder={sortOrder}
           onSort={handleSort}

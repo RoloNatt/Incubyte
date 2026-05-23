@@ -24,12 +24,17 @@ export function convertSalary(amount, fromCurrency, toCurrency) {
   return inrAmount / EXCHANGE_RATES_TO_INR[toCurrency];
 }
 
-export function formatSalary(amount, currency, displayCurrency = 'Original') {
-  let displayAmount = amount;
+export function applyPeriod(amount, period = 'annual') {
+  if (period === 'monthly') return amount / 12;
+  return amount;
+}
+
+export function formatSalary(amount, currency, displayCurrency = 'Original', period = 'annual') {
+  let displayAmount = applyPeriod(amount, period);
   let displayCurr = currency;
 
   if (displayCurrency !== 'Original') {
-    displayAmount = convertSalary(amount, currency, displayCurrency);
+    displayAmount = convertSalary(displayAmount, currency, displayCurrency);
     displayCurr = displayCurrency;
   }
 
@@ -40,6 +45,32 @@ export function formatSalary(amount, currency, displayCurrency = 'Original') {
   }
 
   return `${symbol}${Math.round(displayAmount).toLocaleString('en-US')}`;
+}
+
+export function formatCompact(amount, currency) {
+  const symbol = CURRENCY_SYMBOLS[currency] || '';
+
+  if (currency === 'INR') {
+    if (amount >= 10000000) {
+      const cr = amount / 10000000;
+      return `${symbol}${cr % 1 === 0 ? cr.toFixed(0) : cr.toFixed(1).replace(/\.0$/, '')}Cr`;
+    }
+    if (amount >= 100000) {
+      const l = amount / 100000;
+      return `${symbol}${l % 1 === 0 ? l.toFixed(0) : l.toFixed(1).replace(/\.0$/, '')}L`;
+    }
+    return `${symbol}${formatIndian(Math.round(amount))}`;
+  }
+
+  if (amount >= 1000000) {
+    const m = amount / 1000000;
+    return `${symbol}${m % 1 === 0 ? m.toFixed(0) : m.toFixed(1).replace(/\.0$/, '')}M`;
+  }
+  if (amount >= 10000) {
+    const k = amount / 1000;
+    return `${symbol}${k % 1 === 0 ? k.toFixed(0) : k.toFixed(1).replace(/\.0$/, '')}K`;
+  }
+  return `${symbol}${Math.round(amount).toLocaleString('en-US')}`;
 }
 
 function formatIndian(num) {
