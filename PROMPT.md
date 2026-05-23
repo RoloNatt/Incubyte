@@ -12,3 +12,22 @@ This file tracks all prompts given and the modifications made in response.
 - Created `README.md` with project description, setup instructions (including virtual environment activation), and placeholders for usage and project structure.
 - Created `PROMPT.md` (this file) to track prompt history.
 - Noted that the virtual environment is located at `env/`.
+
+## Prompt 2
+
+**Date:** 2026-05-23
+
+**Prompt:** you need to follow the 3 rules of TDD when writing any code, explain in simple terms what they are so I know that you know what it is
+
+**Summary of Modifications:**
+- No code changes.
+- Explained the 3 TDD rules: (1) write a failing test first, (2) write minimum code to pass, (3) refactor with tests green.
+
+## Prompt 3
+
+**Date:** 2026-05-23
+
+**Prompt:** update the PROMPT file
+
+**Summary of Modifications:**
+- Appended Prompt 2 and Prompt 3 to `PROMPT.md`.
