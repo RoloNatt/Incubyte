@@ -40,4 +40,13 @@ describe('InsightsPage', () => {
     const buttons = screen.getAllByText('Get Stats');
     expect(buttons).toHaveLength(2);
   });
+
+  it('renders page subtitle', () => {
+    render(
+      <MemoryRouter>
+        <InsightsPage />
+      </MemoryRouter>
+    );
+    expect(screen.getByText('Analyze salary data across countries and job titles')).toBeInTheDocument();
+  });
 });

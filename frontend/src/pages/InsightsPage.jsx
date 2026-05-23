@@ -8,6 +8,11 @@ import {
   MenuItem,
   TextField,
   Button,
+  Container,
+  Card,
+  CardContent,
+  Divider,
+  Alert,
 } from '@mui/material';
 import StatsCard from '../components/StatsCard';
 import { getCountryInsights, getJobTitleInsights } from '../api/employeeApi';
@@ -49,87 +54,106 @@ export default function InsightsPage() {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" sx={{ mb: 3 }}>
-        Salary Insights
-      </Typography>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4">Salary Insights</Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
+          Analyze salary data across countries and job titles
+        </Typography>
+      </Box>
 
       {/* Country Stats Section */}
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        Country Salary Stats
-      </Typography>
-      <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <InputLabel>Country</InputLabel>
-          <Select
-            value={country}
-            label="Country"
-            onChange={(e) => setCountry(e.target.value)}
-          >
-            {COUNTRIES.map((c) => (
-              <MenuItem key={c} value={c}>
-                {c}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Button variant="contained" onClick={handleCountrySearch}>
-          Get Stats
-        </Button>
-      </Box>
-      {countryError && (
-        <Typography color="error" sx={{ mb: 2 }}>
-          {countryError}
-        </Typography>
-      )}
-      {countryStats && (
-        <Box sx={{ display: 'flex', gap: 2, mb: 4, flexWrap: 'wrap' }}>
-          <StatsCard title="Min Salary" value={countryStats.min_salary.toLocaleString()} />
-          <StatsCard title="Max Salary" value={countryStats.max_salary.toLocaleString()} />
-          <StatsCard title="Avg Salary" value={countryStats.avg_salary.toLocaleString()} />
-          <StatsCard title="Employee Count" value={countryStats.employee_count} />
-        </Box>
-      )}
+      <Card sx={{ mb: 4 }}>
+        <CardContent>
+          <Typography variant="h6" sx={{ mb: 0.5 }}>
+            Country Salary Stats
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Select a country to view salary statistics
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <InputLabel>Country</InputLabel>
+              <Select
+                value={country}
+                label="Country"
+                onChange={(e) => setCountry(e.target.value)}
+              >
+                {COUNTRIES.map((c) => (
+                  <MenuItem key={c} value={c}>
+                    {c}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Button variant="contained" onClick={handleCountrySearch}>
+              Get Stats
+            </Button>
+          </Box>
+          {countryError && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              {countryError}
+            </Alert>
+          )}
+          {countryStats && (
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
+              <StatsCard title="Min Salary" value={countryStats.min_salary.toLocaleString()} />
+              <StatsCard title="Max Salary" value={countryStats.max_salary.toLocaleString()} />
+              <StatsCard title="Avg Salary" value={countryStats.avg_salary.toLocaleString()} />
+              <StatsCard title="Employee Count" value={countryStats.employee_count.toLocaleString()} />
+            </Box>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Job Title Stats Section */}
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        Job Title Salary Stats
-      </Typography>
-      <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <InputLabel>Country</InputLabel>
-          <Select
-            value={jtCountry}
-            label="Country"
-            onChange={(e) => setJtCountry(e.target.value)}
-          >
-            {COUNTRIES.map((c) => (
-              <MenuItem key={c} value={c}>
-                {c}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <TextField
-          label="Job Title"
-          size="small"
-          value={jobTitle}
-          onChange={(e) => setJobTitle(e.target.value)}
-        />
-        <Button variant="contained" onClick={handleJobTitleSearch}>
-          Get Stats
-        </Button>
-      </Box>
-      {jtError && (
-        <Typography color="error" sx={{ mb: 2 }}>
-          {jtError}
-        </Typography>
-      )}
-      {jtStats && (
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-          <StatsCard title="Average Salary" value={jtStats.avg_salary.toLocaleString()} />
-        </Box>
-      )}
-    </Box>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" sx={{ mb: 0.5 }}>
+            Job Title Salary Stats
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Select a country and job title to view the average salary
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <InputLabel>Country</InputLabel>
+              <Select
+                value={jtCountry}
+                label="Country"
+                onChange={(e) => setJtCountry(e.target.value)}
+              >
+                {COUNTRIES.map((c) => (
+                  <MenuItem key={c} value={c}>
+                    {c}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              label="Job Title"
+              size="small"
+              value={jobTitle}
+              onChange={(e) => setJobTitle(e.target.value)}
+            />
+            <Button variant="contained" onClick={handleJobTitleSearch}>
+              Get Stats
+            </Button>
+          </Box>
+          {jtError && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              {jtError}
+            </Alert>
+          )}
+          {jtStats && (
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
+              <StatsCard title="Average Salary" value={jtStats.avg_salary.toLocaleString()} />
+            </Box>
+          )}
+        </CardContent>
+      </Card>
+    </Container>
   );
 }

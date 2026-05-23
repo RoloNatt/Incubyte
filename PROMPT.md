@@ -85,3 +85,37 @@ This file tracks all prompts given and the modifications made in response.
 - **Backend:** 16 tests passed
 - **Frontend:** 16 tests passed
 - **Seed:** 10,000 employees in 0.03 seconds
+
+## Prompt 5
+
+**Date:** 2026-05-23
+
+**Prompt:** Fix the empty table bug (employees showing 0 rows despite seeded data) and implement comprehensive UI/UX improvements to make the app look professional.
+
+**Summary of Modifications:**
+
+### Bug Fix: Empty Table
+- **Root cause:** CORS was restricted to `localhost:5173` only. Browser preview proxy used a different origin, causing silent CORS failures. The frontend catch block set employees to `[]`.
+- **Fix:** Changed CORS `allow_origins` to `["*"]` (appropriate for localhost prototype).
+- Created `backend/app/config.py` — centralized DB path using absolute path to prevent SQLite path mismatch.
+- Updated `backend/app/database.py` — imports from config, prints DB path on startup.
+- Updated `backend/app/seed.py` — added verification count and DB path logging after seed.
+- Added `backend/app/tests/test_config.py` — 3 tests verifying DB path is absolute, points to backend dir, and URL is correct.
+
+### UI/UX Improvements
+- **Theme:** Created `frontend/src/theme.js` — professional color palette (deep blue navbar, gray background, white cards, rounded corners, custom typography).
+- **App.jsx:** Added `ThemeProvider`, `CssBaseline`, gray background wrapper.
+- **Navbar:** Active page highlighting, icons (People/Insights), sticky position, hover effects, professional styling.
+- **EmployeesPage:** Wrapped in `Container maxWidth="xl"`, added subtitle, filter card wrapper, loading spinner (`CircularProgress`), error alert.
+- **EmployeeTable:** Zebra rows, hover effect, salary right-aligned with `toLocaleString()` formatting, tooltips on edit/delete, smaller icon buttons, friendly empty state with icon + message.
+- **InsightsPage:** Wrapped in Container, added subtitles and descriptions, sections in Cards with Dividers, Alert components for errors.
+- **StatsCard:** Improved with border, uppercase label, better typography hierarchy.
+
+### New/Updated Tests
+- `EmployeeTable.test.jsx` — added: empty state renders, salary formatting with commas (6 total)
+- `EmployeesPage.test.jsx` — added: subtitle renders, error message on API failure (5 total)
+- `InsightsPage.test.jsx` — added: subtitle renders (5 total)
+
+### Test Results
+- **Backend:** 19 tests passed
+- **Frontend:** 21 tests passed

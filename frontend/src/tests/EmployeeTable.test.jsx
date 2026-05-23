@@ -49,4 +49,16 @@ describe('EmployeeTable', () => {
     fireEvent.click(deleteButtons[0]);
     expect(onDelete).toHaveBeenCalledWith(1);
   });
+
+  it('renders empty state when no employees', () => {
+    render(<EmployeeTable {...defaultProps} employees={[]} total={0} />);
+    expect(screen.getByText('No employees found')).toBeInTheDocument();
+    expect(screen.getByText('Try changing filters or adding employees')).toBeInTheDocument();
+  });
+
+  it('formats salary with commas', () => {
+    render(<EmployeeTable {...defaultProps} />);
+    expect(screen.getByText('75,000')).toBeInTheDocument();
+    expect(screen.getByText('90,000')).toBeInTheDocument();
+  });
 });

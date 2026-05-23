@@ -4,6 +4,7 @@ import os
 from sqlalchemy import text
 from app.database import engine, Base
 from app.models import Employee
+from app.config import DB_PATH
 
 COUNTRIES = ["India", "USA", "Germany", "UK", "Singapore", "Australia"]
 JOB_TITLES = [
@@ -60,7 +61,12 @@ def seed():
         conn.execute(Employee.__table__.insert(), employees)
     elapsed = time.time() - start
 
+    with engine.connect() as conn:
+        count = conn.execute(text("SELECT COUNT(*) FROM employees")).scalar()
+
     print(f"Seeded 10000 employees in {elapsed:.2f} seconds")
+    print(f"Verified count: {count}")
+    print(f"Database: {DB_PATH}")
 
 
 if __name__ == "__main__":

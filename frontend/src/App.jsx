@@ -1,19 +1,25 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { CssBaseline } from '@mui/material';
+import { CssBaseline, Box } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme';
 import Navbar from './components/Navbar';
 import EmployeesPage from './pages/EmployeesPage';
 import InsightsPage from './pages/InsightsPage';
 
 function App() {
   return (
-    <BrowserRouter>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<EmployeesPage />} />
-        <Route path="/insights" element={<InsightsPage />} />
-      </Routes>
-    </BrowserRouter>
+      <BrowserRouter>
+        <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<EmployeesPage />} />
+            <Route path="/insights" element={<InsightsPage />} />
+          </Routes>
+        </Box>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

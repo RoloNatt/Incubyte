@@ -48,4 +48,25 @@ describe('EmployeesPage', () => {
       expect(screen.getByText('John Smith')).toBeInTheDocument();
     });
   });
+
+  it('renders page subtitle', () => {
+    render(
+      <MemoryRouter>
+        <EmployeesPage />
+      </MemoryRouter>
+    );
+    expect(screen.getByText('Manage employee records across the organization')).toBeInTheDocument();
+  });
+
+  it('shows error message when API fails', async () => {
+    api.getEmployees.mockRejectedValue(new Error('fail'));
+    render(
+      <MemoryRouter>
+        <EmployeesPage />
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Failed to load employees. Is the backend running?')).toBeInTheDocument();
+    });
+  });
 });
